@@ -1,70 +1,88 @@
-# Getting Started with Create React App
+# React 18
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Breaking Changes
+One of the changes you can make is to alter ```render``` to ```createRoot```
+```
+// Before
+import { render } from "react-dom";
+ 
+const container = document.getElementById("app");
+render(<App tab="home" />, container);
+ 
+// After
+import { createRoot } from "react-dom/client";
+ 
+const container = document.getElementById("app");
+const root = createRoot(container);
+root.render(<App tab="home" />);
+```
+```createRoot``` enables concurrent features from React 18. To ensure you migrate your app properly, try enabling strict mode. Strict mode will let you know what is happening with components in development, and it will print out any irregularities in the console.
 
-## Available Scripts
+```
+import React from "react";
+import { createRoot } from "react-dom/client";
+ 
+function App() {
+  return (
+    <div>
+      <Header />
+      <React.StrictMode>
+        <div>
+          <Content />
+          <SignUpForm />
+        </div>
+      </React.StrictMode>
+      <Footer />
+    </div>
+  );
+}
+ 
+const container = document.getElementById("app");
+const root = createRoot(container);
+root.render(<App />);
+```
 
-In the project directory, you can run:
+## React Hooks
 
-### `npm start`
+Hooks were first introduced in React 16.8. Hooks helps us to manage our component's state, or performing an after effect when certain changes occur in state(s) without writing a class.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## useState Hook
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+The state of our application is bound to change at some point. This could be the value of a variable, an object, or whatever type of data exists in our component.
 
-### `npm test`
+To make it possible to have the changes reflected in the DOM, we have to use a React hook called ```useState```.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+import { useState } from "react";
 
-### `npm run build`
+function App() {
+  const [name, setName] = useState("Ihechikara");
+  const changeName = () => {
+    setName("Chikara");
+  };
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+  return (
+    <div>
+      <p>My name is {name}</p>
+      <button onClick={changeName}> Click me </button>
+    </div>
+  );
+}
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+export default App;
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Also, if you're using hydrate for server-side rendering with hydration, you can upgrade to hydrateRoot:
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+````
+// Before
+import { hydrate } from "react-dom";
+const container = document.getElementById("app");
+hydrate(<App tab="home" />, container);
+ 
+// After
+import { hydrateRoot } from "react-dom/client";
+const container = document.getElementById("app");
+const root = hydrateRoot(container, <App tab="home" />);
+// Unlike with createRoot, you don't need a separate root.render() call here.
+```
